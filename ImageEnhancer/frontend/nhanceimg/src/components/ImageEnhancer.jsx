@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 
-function ImageEnhancer() {
+function ImageEnhancer({ setError }) {
   const [selectedImage, setSelectedImage] = useState(null);
   const [enhancedImage, setEnhancedImage] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -36,9 +36,17 @@ function ImageEnhancer() {
       });
 
       const data = await response.json();
+      if (!response.ok) {
+        setError(`Error: ${data.error || 'Failed to enhance image'}`);
+        return;
+      }
+      if (data.message) {
+        setError(`Error: ${data.message || 'Failed to enhance image'}`);
+        return;
+      }
       setEnhancedImage(`data:image/jpeg;base64,${data.image}`);
-    } catch (err) {
-      console.error('Error enhancing image:', err);
+    } catch (error) {
+      console.error('Error enhancing image:', error);
     } finally {
       setLoading(false);
     }
